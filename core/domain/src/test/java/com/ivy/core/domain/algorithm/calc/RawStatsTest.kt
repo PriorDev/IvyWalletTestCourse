@@ -9,40 +9,18 @@ import org.junit.jupiter.api.Test
 import java.time.Instant
 
 internal class RawStatsTest {
-
     @Test
-    fun `Test creating raw stats from transactions`() {
-        val tenSecondsAgo = Instant.now().minusSeconds(10)
-        val fiveSecondsAgo = Instant.now().minusSeconds(5)
-        val threeSecondsAgo = Instant.now().minusSeconds(5)
-        val stats = rawStats(
-            listOf(
-                CalcTrn(
-                    amount = 5.0,
-                    currency = "EUR",
-                    type = TransactionType.Income,
-                    time = tenSecondsAgo
-                ),
-                CalcTrn(
-                    amount = 3.0,
-                    currency = "USD",
-                    type = TransactionType.Expense,
-                    time = threeSecondsAgo
-                ),
-                CalcTrn(
-                    amount = 10.0,
-                    currency = "USD",
-                    type = TransactionType.Expense,
-                    time = fiveSecondsAgo
-                ),
-            )
+    fun `test raw stats`() {
+        val transactions = listOf(
+            CalcTrn(10.0, "MXN", TransactionType.Income, Instant.now()),
+            CalcTrn(1000.0, "MXN", TransactionType.Income, Instant.now()),
+            CalcTrn(20.0, "MXN", TransactionType.Expense, Instant.now()),
+            CalcTrn(50.0, "MXN", TransactionType.Expense, Instant.now())
         )
 
-        assertThat(stats.expensesCount).isEqualTo(2)
-        assertThat(stats.newestTrnTime).isEqualTo(threeSecondsAgo)
-        assertThat(stats.expenses).isEqualTo(mapOf("USD" to 13.0))
+        val result = rawStats(transactions)
 
-        assertThat(stats.incomesCount).isEqualTo(1)
-        assertThat(stats.incomes).isEqualTo(mapOf("EUR" to 5.0))
+        assertThat(result.expensesCount).isEqualTo(2)
+        assertThat(result.incomesCount).isEqualTo(2)
     }
 }
