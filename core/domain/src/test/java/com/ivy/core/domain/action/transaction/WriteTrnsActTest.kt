@@ -58,64 +58,17 @@ class WriteTrnsActTest {
 
     @Test
     fun `Test create transaction with expense`() = runBlocking<Unit> {
-        val account = Account(
-            id = UUID.randomUUID(),
-            name = "Test account",
-            currency = "EUR",
-            color = 0x00f15e,
-            icon = null,
-            excluded = false,
-            folderId = null,
-            orderNum = 1.0,
-            state = AccountState.Default,
-            sync = Sync(
-                state = SyncState.Syncing,
-                lastUpdated = LocalDateTime.now()
-            )
+        val account = account().copy(
+            name = "Specific name"
         )
+
         val transactionId = UUID.randomUUID()
-        val tag = Tag(
-            id = UUID.randomUUID().toString(),
-            color = 0x00f15e,
-            name = "Test tag",
-            orderNum = 1.0,
-            state = TagState.Default,
-            sync = Sync(SyncState.Syncing, LocalDateTime.now())
-        )
-        val attachment = Attachment(
-            id = UUID.randomUUID().toString(),
-            associatedId = transactionId.toString(),
-            uri = "test",
-            source = AttachmentSource.Local,
-            filename = null,
-            type = AttachmentType.Image,
-            sync = Sync(SyncState.Syncing, LocalDateTime.now())
-        )
-        val transaction = Transaction(
+        val tag = tag()
+        val attachment = attachment(transactionId)
+        val transaction = transaction(account).copy(
             id = transactionId,
-            account = account,
-            type = TransactionType.Expense,
-            value = Value(
-                amount = 50.0,
-                currency = "EUR"
-            ),
-            category = null,
-            time = TrnTime.Actual(LocalDateTime.now()),
-            title = "Test transaction",
-            description = null,
-            state = TrnState.Default,
-            purpose = TrnPurpose.Fee,
             tags = listOf(tag),
-            attachments = listOf(attachment),
-            metadata = TrnMetadata(
-                recurringRuleId = null,
-                loanId = null,
-                loanRecordId = null
-            ),
-            sync = Sync(
-                state = SyncState.Syncing,
-                lastUpdated = LocalDateTime.now()
-            )
+            attachments = listOf(attachment)
         )
 
         writeTrnsAct(WriteTrnsAct.Input.CreateNew(transaction))
